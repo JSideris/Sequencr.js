@@ -1,0 +1,1 @@
+function Sequencr(){this.chain=function(n,c){Sequencr["for"].apply(this,[0,n.length,function(c){n[c].call(this)},c])},this["for"]=function(n,c,e,t,i){c>n?setTimeout(function(u){e.call(u,n),Sequencr["for"].apply(u,[n+1,c,e,t,i])},t,this):i&&i.call(this)}}var Sequencr=new Sequencr;
