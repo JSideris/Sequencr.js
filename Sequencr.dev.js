@@ -1,4 +1,6 @@
 /*
+Sequencr.js V2
+
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
 
@@ -20,8 +22,13 @@ function Sequencr() {
 	this.for = function (startInclusive, endExclusive, callback, timeout, onCompleted) {
 		if (startInclusive < endExclusive) {
 			setTimeout(function (This) {
-				callback.call(This, startInclusive);
-				Sequencr.for.apply(This, [startInclusive + 1, endExclusive, callback, timeout, onCompleted]);
+				var ret = callback.call(This, startInclusive);
+				if(ret !== false){
+					Sequencr.for.apply(This, [startInclusive + 1, endExclusive, callback, timeout, onCompleted]);
+				}
+				else if(onCompleted) {
+					onCompleted.call(this);
+				}
 			}, timeout, this);
 		}
 		else if(onCompleted) {
