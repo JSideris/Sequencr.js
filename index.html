@@ -1,0 +1,421 @@
+<!DOCTYPE HTML>
+
+<html>
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="pragma" content="no-cache" />
+
+<link rel="shortcut icon" href="./favicon.ico" />
+
+<link rel="stylesheet" type="text/css" href="./bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="./bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="./style.css">
+<link rel="stylesheet" type="text/css" href="./prettify.css">
+
+<script type="text/javascript" src="./jquery.js"></script>
+<script type="text/javascript" src="./jquery-ui.min.js"></script>
+<script type="text/javascript" src="./run_prettify.js"></script>
+<script type="text/javascript" src="./sequencr.dev.js"></script>
+
+<script type="text/javascript">
+	var headertext = "Sequencr.js lets you chain functions together, or execute loops, punctuated by timeouts.";
+	var headerblink = true;
+	setTimeout(function(){
+		Sequencr.for(0, headertext.length, function(i){
+			$("#headertext").append(headertext[i]);
+		}, function(){return 10 + Math.pow(Math.random(), 2) * 130}, function(){
+			$("#maindownloadbutton").fadeTo(500, 1);
+			setTimeout(function(){
+				headerblink = false;
+			}, 5000)
+		});
+	}, 750);
+	
+	Sequencr.do(function(){
+		if(headerblink){
+			$("#headercursorchar").toggle();
+		}
+		else{
+			$("#headercursorchar").hide();
+		}
+		return headerblink;
+	}, 250);
+	
+	
+	//JUMPING MARIO
+	//You could accomplish this with sequencr as well, but realistically there's nothing wrong with the jquery method.
+	
+	var marioAlreadyJumpped = false;
+	$(window).scroll(function(data){
+		if(!marioAlreadyJumpped && $(window).scrollTop() + $(window).height() > $("#mario").offset().top + $("#mario").height()){
+			marioAlreadyJumpped = true;
+			$("#mario").attr("src", "./mariojumping.png");
+			$("#mario").animate({"top": -($("#mariocontainer").height() - $("#mario").height())}, 300, "easeOutQuad", function(){
+				$("#mario").animate({"top": 0}, 300, "easeInQuad", function(){
+					$("#mario").attr("src", "./mario.png");
+				});
+			});
+		}
+	});
+	
+	//MARIO EXAMPLE
+	
+	function marioBig(){
+		$("#mario").css("height", "100px");
+	}
+	
+	function marioSmall(){
+		$("#mario").css("height", "70px");
+	}
+	
+	$(function(){
+		$("#mario").click(function(){
+			if($(this).css("height") == "70px"){
+				Sequencr.chain([
+					marioBig, 
+					marioSmall, 
+					marioBig, 
+					marioSmall, 
+					marioBig, 
+					function(){changingLock = false;}
+				], 100);
+			}
+			else{
+				Sequencr.chain([
+					marioSmall, 
+					marioBig, 
+					marioSmall, 
+					marioBig, 
+					marioSmall, 
+					function(){changingLock = false;}
+				], 100);
+			}
+	});
+	});
+	
+	//PRIME NUMBER EXAMPLE
+	
+	function recursivePrimeFinder(value) {
+		Sequencr.for(0, ~~Math.sqrt(value / 1000), 
+			function(i){
+				for(var x = i * 1000 + 2; x < i + 1000 && x < value; x++){
+					if(value % x === 0) {
+						return false; //Breaks out of the loop
+					}
+				}
+			}, 
+			1, //Interval
+			function(completed){ 
+				//Done callback - completed will be true iff value is prime
+				if(completed){
+					$("#primenumbers").append("<li>" + value + "</li>");
+					while($("#primenumbers").height() > $("#primenumberscodesample").height()){
+						$("#primenumbers").find("li").first().remove();
+					}
+				}
+				recursivePrimeFinder(value + 2);
+			});
+	}
+	
+	$(function(){recursivePrimeFinder(100000001);}); //Start all the way up here.
+	
+	//PRINT TEXT EXAMPLE 1
+	
+	sampleText = "The quick brown fox jumps over the lazy dog.";
+	var printLock = false;
+	var timeout = 75;
+	$(function(){
+		$("#txtEx1Btn").click(function(){
+			if(printLock)
+				return;
+			printLock = true;
+			$("#txt1out").html("");//Clear the output
+		
+			Sequencr.for(0, sampleText.length, function(i){
+				$("#txt1out").append(sampleText[i]); //Append char
+			}, timeout, //Timeout in ms
+			function(){printLock = false}); //Done callback
+		});
+	});
+	
+	var printLock = false;
+	var timeout = 75;
+	$(function(){
+		$("#txtEx2Btn").click(function(){
+			if(printLock)
+				return;
+			printLock = true;
+			$("#txt2out").html("");//Clear the output
+		
+			Sequencr.for(0, sampleText.length, function(i){
+				$("#txt2out").append(sampleText[i]); //Append char
+			}, 
+			function(i){ //i is the index within the loop
+				var timeout = 50; //Min timeout.
+				timeout += 200 * Math.random(); //Random factor
+				if(sampleText[i] == sampleText[i].toUpperCase()){
+					//Everyone knows uppercase letters take longer to type
+					timeout += 25; 
+				}
+				switch(sampleText[i]){
+					case ".":
+					case ",":
+						timeout += 100 * Math.random(); //Punctuation penalty
+					case "a":
+					case "s":
+					case "d":
+					case "f":
+					case "j":
+					case "k":
+					case "l":
+					case ";":
+						timeout += 10 * Math.random(); //Home row penalty
+						break;
+					case "q":
+					case "z":
+					case "p":
+					case "/":
+						timeout += 60 * Math.random(); //Pinky penalty
+						break;
+					default:
+						timeout += 40 * Math.random(); //Other keys penalty
+				}
+				return timeout;
+			}
+			, 
+			function(){printLock = false}); //Done callback
+		});
+	});
+	
+	
+</script>
+<body>
+	<div class="headbg">
+		<div class="headcontent container">
+			<img src="./Logo.png" /><span id="logoname">Sequencr.js</span>
+		
+			<br clear="all" /><br />
+			<!--<div class="consoleboxbox"><div class="consolebox">-->
+				<span id="headertext">&nbsp;</span><span id="headercursorchar">&brvbar;</span>
+			<!--</div></div>-->
+			<br /><br />
+			<a id="maindownloadbutton" href="" target="_blank" class="btn btn-xlg btn-success">Download Sequencr.js</a>
+		</div>
+	</div>
+	<br /><br />
+	<div id="mainbodybg"><!-- Main content -->
+		<div class="container">
+			<h1>Features</h1>
+			<h2>Function Chaining</h2>
+			Sequencr.js was originally built to solve the annoying callback hell problem encountered when chaining computationally expensive blocking functions together.
+			<br />
+			<table class="table"><tbody><tr>
+				<td>
+					<h3>This</h3>
+					<pre class="prettyprint linenums">
+setTimeout(function(timeout)
+{
+    function1();
+    setTimeout(function(timeout)
+    {
+        function2();
+        setTimeout(function(timeout)
+        {
+            function3();
+        }, timeout, timeout)
+    }, timeout, timeout)
+}, 10, 10);
+					</pre>
+				</td>
+				<td>
+					<h3>becomes this.</h3>
+					<pre class="prettyprint linenums">
+Sequencr.chain([function1, function2, function3], 10);
+					</pre>
+				</td>
+			</tr></tbody></table>
+			But this is also handy for adding visual effects to a page. Hint: click Mario to whack him with a boomerang or give him a red mushroom.
+			<br />
+			<table class="table"><tbody><tr>
+				<td class="col-md-8">
+					<pre class="prettyprint linenums">
+function marioBig(){
+	$("#mario").css("height", "100px");
+}
+
+function marioSmall(){
+	$("#mario").css("height", "70px");
+}
+
+$(function(){
+	$("#mario").click(function(){
+		if($(this).css("height") == "70px"){
+			Sequencr.chain([
+				marioBig, 
+				marioSmall, 
+				marioBig, 
+				marioSmall, 
+				marioBig, 
+				function(){changingLock = false;}
+			], 100);
+		}
+		else{
+			Sequencr.chain([
+				marioSmall, 
+				marioBig, 
+				marioSmall, 
+				marioBig, 
+				marioSmall, 
+				function(){changingLock = false;}
+			], 100);
+		}
+	});
+});
+					</pre>
+				</td>
+				<td id="mariocontainer" align="center" style="vertical-align:bottom;" class="col-md-4">
+					<img id="mario" src="./mario.png" style="height: 100px; cursor: pointer; position:relative;" title="It's fair use, Nintendo." />
+				</td>
+			</tr></tbody></table>
+			
+			I should mention that jquery is not a dependancy.
+			
+			<h1>Breaking Loops</h1>
+			<p>How do you avoid crashing the browser when running CPU-intensive loops? Timeouts of course. I got fed up with the limitations and annoyances of setInterval, clearInterval, and setTimeout, so I built a better solution: <code>Sequencr.for</code> and <code>Sequencr.do</code>.</p>
+			<p>This can be useful for breaking up expensive loops. For instance, checking relatively high prime numbers without degrading user experience (yes it's been processing the entire time while you were up there playing with Mario):</p>
+			<br />
+			<table class="table"><tbody><tr>
+				<td class="col-md-10">
+					<pre id="primenumberscodesample" class="prettyprint linenums">
+function recursivePrimeFinder(value) {
+	Sequencr.for(0, ~~Math.sqrt(value / 1000), 
+		function(i){
+			for(var x = i * 1000 + 2; x < i + 1000 && x < value; x++){
+				if(value % x === 0) {
+					return false; //Breaks out of the loop
+				}
+			}
+		}, 
+		1, //Interval
+		function(completed){ 
+			//Done callback - completed will be true iff value is prime
+			if(completed){
+				$("#primenumbers").append("&lt;li&gt;" + value + "&lt;/li&gt;");
+				while($("#primenumbers").height() > $("#primenumberscodesample").height()){
+					$("#primenumbers").find("li").first().remove();
+				}
+			}
+			recursivePrimeFinder(value + 2);
+		});
+}
+
+$(function(){recursivePrimeFinder(100000001);}); //Start all the way up here.
+					</pre>
+				</td>
+				<td class="col-md-2">
+					<div class="consoleboxbox" style="height: 100%;"><div class="consolebox" style="height: 100%; color: #6F6;">
+						<ul id="primenumbers" style="list-style-type: none;"></ul>
+					</div></div>
+				</td>
+			</tr></tbody></table>
+			
+			<div style="margin-left: 50px;">
+				<p>Note that the above example also demonstrates how to pull off a nested loop, i.e., consider this typical blocking prime finder who's algorithm was used to build the above: </p>
+					<pre class="prettyprint linenums">
+for(var i = 2; i < 1000; i++){ //Test integers from 1 -> 1000
+	prime = true; 
+	for(j = 2; j < ~~Math.sqrt(i); j++)){ //Check factors
+		if(i % j === 0) {
+			prime = false; 
+			break;
+		}
+	}
+	if(prime)
+		console.log(i);
+}
+				</pre>
+					<p>Nesting is a bit tricky because Sequencr.js is non-blocking. Recursion is a must.</p>
+			</div>
+			<p>Sequencr.js also provides a succinct solution to numerous other common tasks.</p>
+			<br />
+			<table class="table"><tbody><tr>
+				<td class="col-md-7">
+					<pre class="prettyprint linenums">
+sampleText = "The quick brown fox jumps over the lazy dog.";
+var printLock = false;
+var timeout = 75;
+$(function(){
+	$("#txtExBtn").click(function(){
+		if(printLock)
+			return;
+		printLock = true;
+		$("#txtout").html("");//Clear the output
+	
+		Sequencr.for(0, sampleText.length, function(i){
+			$("#txtout").append(sampleText[i]); //Append char
+		}, timeout, //Timeout in ms
+		function(){printLock = false}); //Done callback
+	});
+});
+					</pre>
+				</td>
+				<td class="col-md-5">
+					<button class="button btn-lg" id="txtEx1Btn" >Click Me</button>
+					<br /><br />
+					<p id="txt1out" style="font-size: 20px; font-weight: bold;"></p>
+				</td>
+			</tr></tbody></table>
+			Let's improve the above code - we'll make it more realistic, as if a human were actually typing it. Here's something setInterval can't do: variable timeouts. Just set timeout to a function that returns an integer.
+			<br />
+			<table class="table"><tbody><tr>
+				<td class="col-md-7">
+					<pre class="prettyprint linenums:18">
+timeout = function(i){ //i is the index within the loop
+	var timeout = 50; //Min timeout.
+	timeout += 200 * Math.random(); //Random factor
+	if(sampleText[i] == sampleText[i].toUpperCase()){
+		//Everyone knows uppercase letters take longer to type
+		timeout += 25; 
+	}
+	switch(sampleText[i]){
+		case ".":
+		case ",":
+			timeout += 100 * Math.random(); //Punctuation penalty
+		case "a":
+		case "s":
+		case "d":
+		case "f":
+		case "j":
+		case "k":
+		case "l":
+		case ";":
+			timeout += 10 * Math.random(); //Home row penalty
+			break;
+		case "q":
+		case "z":
+		case "p":
+		case "/":
+			timeout += 60 * Math.random(); //Pinky penalty
+			break;
+		default:
+			timeout += 40 * Math.random(); //Other keys penalty
+	}
+	return timeout;
+}
+					</pre>
+				</td>
+				<td class="col-md-5">
+					<button class="button btn-lg" id="txtEx2Btn" >Click Me</button>
+					<br /><br />
+					<p id="txt2out" style="font-size: 20px; font-weight: bold;"></p>
+				</td>
+			</tr></tbody></table>
+			
+			<h1>Manual + More Info</h1>
+			Check out the <a target="_blank" href="https://github.com/JSideris/Sequencr.js/wiki">Sequencr.js wiki</a> on github for more infromation, including the Sequencr.js manual, licensing, and how to contribute.
+		</div>
+	</div>
+</body>
+</html>
