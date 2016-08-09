@@ -1,0 +1,52 @@
+.headbg{
+	background-color: #333;
+}
+
+.headcontent{
+	padding-top: 100px;
+	padding-bottom: 100px;
+	color: lightgreen;
+	font-size: 28px;
+}
+
+.btn-xlg {
+    padding: 18px 28px;
+    font-size: 72px; //change this to your desired size
+    line-height: normal;
+    -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+            border-radius: 8px;
+}
+
+.consolebox{
+	background: black;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #222 #AAA #AAA #222;
+}
+.consoleboxbox{
+	background: black;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #AAA #222 #222 #AAA;
+	
+}
+
+#logoname{
+	font-size: 60px;
+	color: white;
+	line-height: 221px;
+	margin-left: 50px;
+}
+
+#maindownloadbutton{
+	opacity: 0.05;
+}
+
+#maindownloadbutton:hover{
+	opacity: 1;
+}
+
+#mainbodybg{
+	padding-bottom: 200px;
+}
