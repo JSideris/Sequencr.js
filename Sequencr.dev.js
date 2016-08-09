@@ -1,5 +1,5 @@
 /*
-Sequencr.js V3
+Sequencr.js V4
 
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
@@ -27,12 +27,12 @@ function Sequencr() {
 					Sequencr.for.apply(This, [startInclusive + 1, endExclusive, callback, timeout, onCompleted]);
 				}
 				else if(onCompleted) {
-					onCompleted.call(this);
+					onCompleted.call(this, false);
 				}
-			}, timeout, this);
+			}, (!!(timeout && timeout.constructor && timeout.call && timeout.apply)) ? (timeout(startInclusive) || 1) : (timeout || 1), this);
 		}
 		else if(onCompleted) {
-			onCompleted.call(this);
+			onCompleted.call(this, true);
 		}
 	}
 
@@ -42,7 +42,7 @@ function Sequencr() {
 			if(ret !== false){
 				Sequencr.do.apply(This, [callback, timeout]);
 			}
-		}, timeout, this);
+		}, (!!(timeout && timeout.constructor && timeout.call && timeout.apply)) ? (timeout() || 1) : (timeout || 1), this);
 	}
 }
 

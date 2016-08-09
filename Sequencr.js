@@ -1,5 +1,5 @@
 /*
-Sequencr.js V3
+Sequencr.js V4
 
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
@@ -12,4 +12,4 @@ and to permit persons to whom the Software is furnished to do so, subject to the
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-function Sequencr(){this.chain=function(n,t){Sequencr["for"].apply(this,[0,n.length,function(t){n[t].call(this)},t])},this["for"]=function(n,t,c,i,e){t>n?setTimeout(function(u){var l=c.call(u,n);l!==!1?Sequencr["for"].apply(u,[n+1,t,c,i,e]):e&&e.call(this)},i,this):e&&e.call(this)},this["do"]=function(n,t){setTimeout(function(c){var i=n.call(c);i!==!1&&Sequencr["do"].apply(c,[n,t])},t,this)}}var Sequencr=new Sequencr;
+function Sequencr(){this.chain=function(c,n){Sequencr["for"].apply(this,[0,c.length,function(n){c[n].call(this)},n])},this["for"]=function(c,n,t,l,i){n>c?setTimeout(function(e){var o=t.call(e,c);o!==!1?Sequencr["for"].apply(e,[c+1,n,t,l,i]):i&&i.call(this,!1)},l&&l.constructor&&l.call&&l.apply?l(c)||1:l||1,this):i&&i.call(this,!0)},this["do"]=function(c,n){setTimeout(function(t){var l=c.call(t);l!==!1&&Sequencr["do"].apply(t,[c,n])},n&&n.constructor&&n.call&&n.apply?n()||1:n||1,this)}}var Sequencr=new Sequencr;
