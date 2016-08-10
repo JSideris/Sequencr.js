@@ -48,20 +48,22 @@ function Sequencr() {
 	}
 	
 	this.promiseChain = function(callbacks){
-		var promise = null;
+		var p = null;
 		for(var i = 0; i < callbacks.length; i++){
-			promise = promise ? promise.then(callbacks[i]) : callbacks[i]();
+			p = p ? p.then(callbacks[i]) : callbacks[i]();
 		}
-		return promise;
+		return p;
 	}
 	
 	this.promiseFor = function(startInclusive, endExclusive, callback, onCompleted){
-		var promise = null;
+		if(startInclusive >= endExclusive) throw "startInclusive must be less than endExclusive.";
+		if(endExclusive == Infinity) throw "Infinite loops are now allowed.";
+		var p = null;
 		var j = startInclusive;
 		for(var i = startInclusive; i < endExclusive; i++){
-			promise = promise ? promise.then(function(){return callback(j++)}) : callback(j++);
+			p = p ? p.then(function(){return callback(j++)}) : callback(j++);
 		}
-		return promise;
+		return p;
 	}
 }
 
