@@ -31,7 +31,7 @@
 <script type="text/javascript" src="./Sequencr.dev.js"></script>
 
 <script type="text/javascript">
-	var headertext = "Sequencr.js lets you chain functions together, or execute loops, punctuated by timeouts.";
+	var headertext = "Chain functions together, or execute loops, punctuated by timeouts or promises.";
 	var headerblink = true;
 	setTimeout(function(){
 		Sequencr.for(0, headertext.length, function(i){
@@ -59,18 +59,31 @@
 	//You could accomplish this with sequencr as well, but realistically there's nothing wrong with the jquery method.
 	
 	var marioAlreadyJumpped = false;
-	$(window).scroll(function(data){
-		if(!marioAlreadyJumpped && $(window).scrollTop() + $(window).height() > $("#mario").offset().top + $("#mario").height()){
-			marioAlreadyJumpped = true;
-			$("#mario").attr("src", "./mariojumping.png");
-			$("#mario").animate({"top": -($("#mariocontainer").height() - $("#mario").height())}, 300, "easeOutQuad", function(){
-				$("#mario").animate({"top": 0}, 300, "easeInQuad", function(){
-					$("#mario").attr("src", "./mario.png");
+	var navbarLoose = false;
+	var originalMenuHeight = Infinity;
+	$(function(){
+		originalMenuHeight = $("#navdiv").offset().top;
+		$(window).scroll(function(data){
+			if(!marioAlreadyJumpped && $(window).scrollTop() + $(window).height() > $("#mario").offset().top + $("#mario").height()){
+				marioAlreadyJumpped = true;
+				$("#mario").attr("src", "./mariojumping.png");
+				$("#mario").animate({"top": -($("#mariocontainer").height() - $("#mario").height())}, 300, "easeOutQuad", function(){
+					$("#mario").animate({"top": 0}, 300, "easeInQuad", function(){
+						$("#mario").attr("src", "./mario.png");
+					});
 				});
-			});
-		}
+			}
+			
+			if($(window).scrollTop() > originalMenuHeight){
+				if(!navbarLoose) $("#navdiv").css("position", "fixed");
+				navbarLoose = true;
+			}
+			else{
+				if(navbarLoose) $("#navdiv").css("position", "static");
+				navbarLoose = false;
+			}
+		});
 	});
-	
 	//MARIO EXAMPLE
 	
 	function marioBig(){
@@ -151,13 +164,13 @@
 		});
 	});
 	
-	var printLock = false;
+	var printLock2 = false;
 	var timeout = 75;
 	$(function(){
 		$("#txtEx2Btn").click(function(){
-			if(printLock)
+			if(printLock2)
 				return;
-			printLock = true;
+			printLock2 = true;
 			$("#txt2out").html("");//Clear the output
 		
 			Sequencr.for(0, sampleText.length, function(i){
@@ -174,6 +187,7 @@
 					case ".":
 					case ",":
 						timeout += 100 * Math.random(); //Punctuation penalty
+						break;
 					case "a":
 					case "s":
 					case "d":
@@ -196,7 +210,7 @@
 				return timeout;
 			}
 			, 
-			function(){printLock = false}); //Done callback
+			function(){printLock2 = false}); //Done callback
 		});
 	});
 	
@@ -206,20 +220,29 @@
 	<div style="position: fixed; right: 10px; bottom: 10px; color: #444; line-height: 20px;">&copy;2016 - Joshua Sideris</div>
 	<div class="headbg">
 		<div class="headcontent container">
-			<img src="./Logo.png" /><span id="logoname">Sequencr.js</span>
+			<img src="./Logo.png" /><span id="logoname">Sequencr.js v5</span>
 		
 			<br clear="all" /><br />
 			<!--<div class="consoleboxbox"><div class="consolebox">-->
 				<span id="headertext">&nbsp;</span><span id="headercursorchar">&brvbar;</span>
 			<!--</div></div>-->
 			<br /><br />
-			<a id="maindownloadbutton" href="https://github.com/JSideris/Sequencr.js/releases" target="_blank" class="btn btn-xlg btn-success">Download Sequencr.js</a>
+			<a id="maindownloadbutton" name="download" href="https://github.com/JSideris/Sequencr.js/releases" target="_blank" class="btn btn-xlg btn-success">Download Sequencr.js</a>
 		</div>
 	</div>
 	<br /><br />
 	<div id="mainbodybg"><!-- Main content -->
 		<div class="container">
+			<div id="navdiv">
+				<a href="#download" class="tocnav">Download</a>
+				<a href="#chaining" class="tocnav">Function Chaining</a>
+				<a href="#nonblockingloops" class="tocnav">Non-Blocking Loops</a>
+				<a href="#promises" class="tocnav">Promises</a>
+				<a href="#moreinfo" class="tocnav">More Info</a>
+			</div>
+			<div class="tocnav" style="visibility: hidden;">&nbsp;</div>
 			<h1>Features</h1>
+			<a name="chaining"></a>
 			<h2>Function Chaining</h2>
 			<p>Sequencr.js was originally built to solve the annoying callback hell problem encountered when chaining computationally expensive blocking functions together.</p>
 			<br />
@@ -294,6 +317,9 @@ $(function(){
 			
 			<p>I should mention that jquery is not a dependancy.</p>
 			
+			<p>Any value returned by a function will be used as an argument to the next function.</p>
+			
+			<a name="nonblockingloops"></a>
 			<h2>Non-Blocking Loops</h2>
 			<p>How do you avoid crashing the browser when running CPU-intensive loops? Since JavaScript doesn't have a native sleep() function, the answer is timeouts, of course. I got fed up with the limitations and annoyances of setInterval, clearInterval, and setTimeout, so I built a better solution: <code>Sequencr.for</code> and <code>Sequencr.do</code>.</p>
 			<p>This can be useful for breaking up expensive loops. For instance, checking relatively high prime numbers without degrading user experience (yes it's been processing the entire time while you were up there playing with Mario):</p>
@@ -334,7 +360,7 @@ $(function(){recursivePrimeFinder(100000001);}); //Start all the way up here.
 			</tr></tbody></table>
 			
 			<div style="margin-left: 50px; background-color: #FFD; padding: 10px;">
-				<p>Note that the above example also demonstrates how to pull off a nested loop, i.e., consider this typical blocking prime finder who's algorithm was used to build the above: </p>
+				<p>Note that the above example also demonstrates one method of pulling off an asynchronous nested loop, i.e., consider this typical blocking prime finder who's algorithm was used to build the above: </p>
 					<pre class="prettyprint linenums">
 for(var i = 2; i < 1000; i++){ //Test integers from 1 -> 1000
 	prime = true; 
@@ -348,10 +374,10 @@ for(var i = 2; i < 1000; i++){ //Test integers from 1 -> 1000
 		console.log(i);
 }
 				</pre>
-					<p>Nesting is a bit tricky because Sequencr.js is non-blocking. Recursion (or flattening the loop) is a must.</p>
+					<p>Nesting is a bit tricky when the inner loop is required to be asynchronous. Recursion (or flattening the loop) works, <br/><a href="#promises">or use Sequencr.js' built-in promise-based techniques</a> (keep reading).</p>
 			</div>
 			<br />
-			<p>Sequencr.js also provides a succinct solution to numerous other common tasks.</p>
+			<p>Sequencr.js' callback-based loops also provide a succinct solution to numerous other common tasks.</p>
 			<br />
 			<table class="table"><tbody><tr>
 				<td class="col-md-7">
@@ -396,6 +422,7 @@ timeout = function(i){ //i is the index within the loop
 		case ".":
 		case ",":
 			timeout += 100 * Math.random(); //Punctuation penalty
+			break;
 		case "a":
 		case "s":
 		case "d":
@@ -426,6 +453,74 @@ timeout = function(i){ //i is the index within the loop
 				</td>
 			</tr></tbody></table>
 			
+			<a name="promises"></a>
+			<h2>Promises</h2>
+			<p>Dealing with code that must make asynchronous requests? You need promises. Sequencr.js has you covered.</p>
+			
+			<p>We've got <code>Sequencr.promiseChain</code>, and <code>Sequencr.promiseFor</code> for your enjoyment. Let's take another look at that prime number example from above because if it were written using <code>Sequencr.promiseFor</code>, we wouldn't need any flattening or using recursion which is what promises are for!
+			
+			<pre class="prettyprint linenums">
+Sequencr.promiseFor(2, 1000, function(i){
+	if(i > 3){
+		var myPromise = Sequencr.promiseFor(2, Math.max(~~Math.sqrt(i), 3), function(j){
+			return new Promise(function(resolve, reject){
+				setTimeout(function(){
+					if(i % j === 0) {
+						prime = false; 
+						reject(i); //Break out of internal loop.
+					}
+					else{
+						resolve(i);
+					}
+				}, 0);
+			});
+		});
+		
+		return new Promise(function(resolve){
+			myPromise.then(function(x){
+				console.log(x + " is prime.");
+				resolve();
+			}).catch(function(x){
+				//console.log(x + " is not prime.");
+				resolve();
+			});	
+		});
+	}
+	else{
+		console.log(i + " is prime.");
+	}
+});
+			</pre>
+			
+			<p><code>Sequencr.promiseChain</code> is also very useful for chaining together functions that make asynchronous requests. For instance:</p>
+			<pre class="prettyprint linenums">
+var myPromise = Sequencr.promiseChain([
+function(){
+    return new Promise(function(resolve, reject){
+        resolve(100); //Arbitrary value.
+    });
+}, 
+function(x){
+    return new Promise(function(resolve, reject){
+        resolve(x * 2); //Arbitrary value.
+    });
+}, 
+function(x){
+    return new Promise(function(resolve, reject){
+        resolve(x + 10); //Arbitrary value.
+    });
+}, 
+]);
+
+//Whenever/later:
+myPromise.then(function(x){
+    console.log(x); //Will print 210, given the above sequence.
+});
+			</pre>
+			
+			<p>Don't forget to <a href="#moreinfo">check the wiki</a> (or just click the link right below this sentence) for more information on Sequencr.js' promises.</p>
+			
+			<a name="moreinfo"></a>
 			<h1>Manual + More Info</h1>
 			Check out the <a target="_blank" href="https://github.com/JSideris/Sequencr.js/wiki">Sequencr.js wiki</a> on github for more infromation, including the Sequencr.js manual, licensing, and how to contribute.
 		</div>

@@ -32,6 +32,24 @@
 	
 }
 
+.tocnav{
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
+	background-color: #EEE;
+	font-size: 16px;
+	font-weight: bold;
+}
+.tocnav:hover{
+	background-color: #DDD;
+	text-decoration: none;
+}
+
+#navdiv{
+	top: 0px;
+}
+
 #logoname{
 	font-size: 60px;
 	color: white;

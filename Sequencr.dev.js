@@ -1,5 +1,5 @@
 /*
-Sequencr.js V4
+Sequencr.js V5
 
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
@@ -14,8 +14,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 function Sequencr() {
 	this.chain = function (callbacks, timeout) {
+		var ret;
 		Sequencr.for.apply(this, [0, callbacks.length, function (i) {
-			callbacks[i].call(this);
+			if(ret === undefined) ret = callbacks[i].call(this);
+			else ret = callbacks[i].call(this, ret);
 		}, timeout]);
 	}
 
@@ -43,6 +45,25 @@ function Sequencr() {
 				Sequencr.do.apply(This, [callback, timeout]);
 			}
 		}, (!!(timeout && timeout.constructor && timeout.call && timeout.apply)) ? (timeout() || 1) : (timeout || 1), this);
+	}
+	
+	this.promiseChain = function(callbacks){
+		var p = null;
+		for(var i = 0; i < callbacks.length; i++){
+			p = p ? p.then(callbacks[i]) : callbacks[i]();
+		}
+		return p;
+	}
+	
+	this.promiseFor = function(startInclusive, endExclusive, callback, onCompleted){
+		if(startInclusive >= endExclusive) throw "startInclusive must be less than endExclusive.";
+		if(endExclusive == Infinity) throw "Infinite loops are now allowed.";
+		var p = null;
+		var j = startInclusive;
+		for(var i = startInclusive; i < endExclusive; i++){
+			p = p ? p.then(function(){return callback(j++)}) : callback(j++);
+		}
+		return p;
 	}
 }
 
