@@ -183,7 +183,7 @@
 					//Everyone knows uppercase letters take longer to type
 					timeout += 25; 
 				}
-				switch(sampleText[i]){
+				switch(sampleText[i].toLowerCase()){
 					case ".":
 					case ",":
 						timeout += 100 * Math.random(); //Punctuation penalty
@@ -418,7 +418,7 @@ timeout = function(i){ //i is the index within the loop
 		//Everyone knows uppercase letters take longer to type
 		timeout += 25; 
 	}
-	switch(sampleText[i]){
+	switch(sampleText[i].toLowerCase()){
 		case ".":
 		case ",":
 			timeout += 100 * Math.random(); //Punctuation penalty
