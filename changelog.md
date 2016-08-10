@@ -1,4 +1,8 @@
 #Changes
+**V5 - 2016-08-10**
+
+Added support for native js promises via two new functions: promiseChain, promiseFor.
+
 **V4 - 2016-08-08**
 
 Made the timeoute parameter optional. Default is 1 (ms).

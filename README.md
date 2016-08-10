@@ -1,5 +1,5 @@
-# Sequencr.js V3
-Sequencr.js is a super-light-weight library that allows you to easily chain function calls together with timeouts in between, or set timeouts between iterations of a loop.
+# Sequencr.js V5
+Sequencr.js lets you chain functions together, or execute loops, punctuated by timeouts or promises. 
 
 Please check out the project page if you haven't already:
 
