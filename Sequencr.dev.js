@@ -22,7 +22,6 @@ function Sequencr() {
 	}
 
 	this.for = function (startInclusive, endExclusive, callback, timeout, onCompleted) {
-		if(startInclusive >= endExclusive) throw "startInclusive must be less than endExclusive.";
 		if (startInclusive < endExclusive) {
 			setTimeout(function (This) {
 				var ret = callback.call(This, startInclusive);
@@ -53,23 +52,23 @@ function Sequencr() {
 		var j = 0;
 		for(var i = 0; i < callbacks.length; i++){
 			if(p)
-				p = p.then(function(ret){ return new Promise(function(resolve, reject){callbacks[j++](resolve, reject, ret)})});
+				p = p.then(function(ret){ return new Promise(function(resolve, reject){callbacks[j++](resolve, reject, ret);})});
 			else 
-				p = new Promise(function(resolve, reject){callbacks[j++](resolve, reject)});
+				p = new Promise(function(resolve, reject){callbacks[j++](resolve, reject);});
 		}
 		return p;
 	}
 	
 	this.promiseFor = function(startInclusive, endExclusive, callback, onCompleted){
-		if(startInclusive >= endExclusive) throw "startInclusive must be less than endExclusive.";
+		if(startInclusive >= endExclusive) return new Promise(function(r){r();});
 		if(endExclusive == Infinity) throw "Infinite loops are now allowed.";
 		var p = null;
 		var j = startInclusive;
 		for(var i = startInclusive; i < endExclusive; i++){
 			if(p)
-				p = p.then(function(ret){return new Promise(function(resolve, reject){callback(resolve, reject, j++, ret)})});
+				p = p.then(function(ret){return new Promise(function(resolve, reject){callback(resolve, reject, j++, ret);})});
 			else
-				p = new Promise(function(resolve, reject){callback(resolve, reject, j++)});
+				p = new Promise(function(resolve, reject){callback(resolve, reject, j++);});
 		}
 		return p;
 	}
