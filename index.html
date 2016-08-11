@@ -122,15 +122,16 @@
 	//PRIME NUMBER EXAMPLE
 	
 	function recursivePrimeFinder(value) {
-		Sequencr.for(0, ~~Math.sqrt(value / 1000), 
+		var sqrt = ~~Math.sqrt(value);
+		Sequencr.for(0, sqrt / 1000, 
 			function(i){
-				for(var x = i * 1000 + 2; x < i + 1000 && x < value; x++){
+				for(var x = i * 1000 + 2; x < sqrt && x < value; x++){
 					if(value % x === 0) {
 						return false; //Breaks out of the loop
 					}
 				}
 			}, 
-			1, //Interval
+			0, //Interval
 			function(completed){ 
 				//Done callback - completed will be true iff value is prime
 				if(completed){
@@ -143,7 +144,7 @@
 			});
 	}
 	
-	$(function(){recursivePrimeFinder(100000001);}); //Start all the way up here.
+	$(function(){recursivePrimeFinder(10000000001);}); //Start all the way up here.
 	
 	//PRINT TEXT EXAMPLE 1
 	
@@ -359,15 +360,16 @@ $(function(){
 				<td class="col-md-10">
 					<pre id="primenumberscodesample" class="prettyprint linenums">
 function recursivePrimeFinder(value) {
-	Sequencr.for(0, ~~Math.sqrt(value / 1000), 
+	var sqrt = ~~Math.sqrt(value);
+	Sequencr.for(0, sqrt / 1000, 
 		function(i){
-			for(var x = i * 1000 + 2; x < i + 1000 && x < value; x++){
+			for(var x = i * 1000 + 2; x < sqrt && x < value; x++){
 				if(value % x === 0) {
 					return false; //Breaks out of the loop
 				}
 			}
 		}, 
-		1, //Interval
+		0, //Interval
 		function(completed){ 
 			//Done callback - completed will be true iff value is prime
 			if(completed){
@@ -377,7 +379,7 @@ function recursivePrimeFinder(value) {
 		});
 }
 
-$(function(){recursivePrimeFinder(100000001);}); //Start all the way up here.
+recursivePrimeFinder(10000000001); //Prime numbers > ten billion.
 					</pre>
 				</td>
 				<td class="col-md-2">
