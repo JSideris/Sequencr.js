@@ -390,7 +390,7 @@ $(function(){
 		if(printLock)
 			return;
 		printLock = true;
-		$("#txtout").html("");//Clear the output
+		$("#txtout").html(""); //Clear the output
 	
 		Sequencr.for(0, sampleText.length, function(i){
 			$("#txtout").append(sampleText[i]); //Append char
@@ -457,9 +457,11 @@ timeout = function(i){ //i is the index within the loop
 			<h2>Promises</h2>
 			<p>Dealing with code that must make asynchronous requests? You need promises. Sequencr.js has you covered.</p>
 			
-			<p>We've got <code>Sequencr.promiseChain</code>, and <code>Sequencr.promiseFor</code> for your enjoyment. Let's take another look at that prime number example from above because if it were written using <code>Sequencr.promiseFor</code>, we wouldn't need any flattening or using recursion which is what promises are for!
+			<p>We've got <code>Sequencr.promiseChain</code>, and <code>Sequencr.promiseFor</code> for your enjoyment. Let's take another look at that prime number example from above because if it were written using <code>Sequencr.promiseFor</code>, we wouldn't need to use recursion or do any flattening, and that's just what promises are for!
 			
 			<pre class="prettyprint linenums">
+//Infinite promise loops are not possible because the promise chain is set up all at once, 
+//but you could always execute this multiple times on different number ranges.
 Sequencr.promiseFor(2, 1000, function(i){
 	if(i > 3){
 		var myPromise = Sequencr.promiseFor(2, Math.max(~~Math.sqrt(i), 3), function(j){
@@ -502,12 +504,12 @@ function(){
 }, 
 function(x){
     return new Promise(function(resolve, reject){
-        resolve(x * 2); //Arbitrary value.
+        resolve(x * 2);
     });
 }, 
 function(x){
     return new Promise(function(resolve, reject){
-        resolve(x + 10); //Arbitrary value.
+        resolve(x + 10);
     });
 }, 
 ]);
