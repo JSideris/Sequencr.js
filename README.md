@@ -1,4 +1,4 @@
-# Sequencr.js V5
+# Sequencr.js V6
 Sequencr.js lets you chain functions together, or execute loops, punctuated by timeouts or promises. 
 
 Please check out the project page if you haven't already:

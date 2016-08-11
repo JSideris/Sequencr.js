@@ -1,5 +1,5 @@
 /*
-Sequencr.js V5
+Sequencr.js V6
 
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
@@ -12,4 +12,4 @@ and to permit persons to whom the Software is furnished to do so, subject to the
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 */
 
-function Sequencr(){this.chain=function(n,t){var i;Sequencr["for"].apply(this,[0,n.length,function(t){i=void 0===i?n[t].call(this):n[t].call(this,i)},t])},this["for"]=function(n,t,i,e,r){t>n?setTimeout(function(l){var o=i.call(l,n);o!==!1?Sequencr["for"].apply(l,[n+1,t,i,e,r]):r&&r.call(this,!1)},e&&e.constructor&&e.call&&e.apply?e(n)||1:e||1,this):r&&r.call(this,!0)},this["do"]=function(n,t){setTimeout(function(i){var e=n.call(i);e!==!1&&Sequencr["do"].apply(i,[n,t])},t&&t.constructor&&t.call&&t.apply?t()||1:t||1,this)},this.promiseChain=function(n){for(var t=null,i=0;i<n.length;i++)t=t?t.then(n[i]):n[i]();return t},this.promiseFor=function(n,t,i,e){if(n>=t)throw"startInclusive must be less than endExclusive.";if(t==1/0)throw"Infinite loops are now allowed.";for(var r=null,l=n,o=n;t>o;o++)r=r?r.then(function(){return i(l++)}):i(l++);return r}}var Sequencr=new Sequencr;
+function Sequencr(){this.chain=function(n,t){var e;Sequencr["for"].apply(this,[0,n.length,function(t){e=void 0===e?n[t].call(this):n[t].call(this,e)},t])},this["for"]=function(n,t,e,i,o){if(n>=t)throw"startInclusive must be less than endExclusive.";t>n?setTimeout(function(r){var c=e.call(r,n);c!==!1?Sequencr["for"].apply(r,[n+1,t,e,i,o]):o&&o.call(this,!1)},i&&i.constructor&&i.call&&i.apply?i(n)||1:i||1,this):o&&o.call(this,!0)},this["do"]=function(n,t){setTimeout(function(e){var i=n.call(e);i!==!1&&Sequencr["do"].apply(e,[n,t])},t&&t.constructor&&t.call&&t.apply?t()||1:t||1,this)},this.promiseChain=function(n){for(var t=null,e=0,i=0;i<n.length;i++)t=t?t.then(function(t){return new Promise(function(i,o){n[e++](i,o,t)})}):new Promise(function(t,i){n[e++](t,i)});return t},this.promiseFor=function(n,t,e,i){if(n>=t)throw"startInclusive must be less than endExclusive.";if(t==1/0)throw"Infinite loops are now allowed.";for(var o=null,r=n,c=n;t>c;c++)o=o?o.then(function(n){return new Promise(function(t,i){e(t,i,r++,n)})}):new Promise(function(n,t){e(n,t,r++)});return o}}var Sequencr=new Sequencr;
