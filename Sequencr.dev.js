@@ -1,5 +1,5 @@
 /*
-Sequencr.js V5
+Sequencr.js V6
 
 The MIT License (MIT)
 Copyright (c) 2016 Joshua Sideris | josh.sideris@gmail.com | https://github.com/JSideris/Sequencr.js
@@ -49,19 +49,26 @@ function Sequencr() {
 	
 	this.promiseChain = function(callbacks){
 		var p = null;
+		var j = 0;
 		for(var i = 0; i < callbacks.length; i++){
-			p = p ? p.then(callbacks[i]) : callbacks[i]();
+			if(p)
+				p = p.then(function(ret){ return new Promise(function(resolve, reject){callbacks[j++](resolve, reject, ret);})});
+			else 
+				p = new Promise(function(resolve, reject){callbacks[j++](resolve, reject);});
 		}
 		return p;
 	}
 	
 	this.promiseFor = function(startInclusive, endExclusive, callback, onCompleted){
-		if(startInclusive >= endExclusive) throw "startInclusive must be less than endExclusive.";
+		if(startInclusive >= endExclusive) return new Promise(function(r){r();});
 		if(endExclusive == Infinity) throw "Infinite loops are now allowed.";
 		var p = null;
 		var j = startInclusive;
 		for(var i = startInclusive; i < endExclusive; i++){
-			p = p ? p.then(function(){return callback(j++)}) : callback(j++);
+			if(p)
+				p = p.then(function(ret){return new Promise(function(resolve, reject){callback(resolve, reject, j++, ret);})});
+			else
+				p = new Promise(function(resolve, reject){callback(resolve, reject, j++);});
 		}
 		return p;
 	}

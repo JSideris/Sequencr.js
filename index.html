@@ -212,15 +212,46 @@
 			, 
 			function(){printLock2 = false}); //Done callback
 		});
-	});
 	
+		//PROMISE PRIME TEST:
+		var prime2Lock = false;
+		$("#prime2Btn").click(function(){
+			console.log("here.");
+			if(prime2Lock) return;
+			prime2Lock = true;
+			$("#primenumbers2").html("");
+			Sequencr.promiseFor(2, 1000, function(resolve, reject, i){
+				if(i > 3){
+					Sequencr.promiseFor(2, ~~Math.sqrt(i) + 1, function(resolve, reject, j){
+						setTimeout(function(){ //Prevent hanging
+							if(i % j === 0) 
+								reject(i); //Break out of internal loop (not prime)
+							else
+								resolve(i); //Continue internal loop (could be prime)
+						}, 0);
+					}).then(function(x){
+						$("#primenumbers2").append("<li>" + x + " is prime.</li>");
+						while($("#primenumbers2").height() + 60 > $("#primenumberscodesample2").height()){
+							$("#primenumbers2").find("li").first().remove();
+						}
+						resolve(); //Continue
+					}).catch(resolve);	
+				}
+				else{
+					$("#primenumbers2").append("<li>" + i + " is prime.</li>");
+					resolve(); //Continue
+				}
+			})
+			.then(function(){prime2Lock = false;});
+		});
+	});
 	
 </script>
 <body>
 	<div style="position: fixed; right: 10px; bottom: 10px; color: #444; line-height: 20px;">&copy;2016 - Joshua Sideris</div>
 	<div class="headbg">
 		<div class="headcontent container">
-			<img src="./Logo.png" /><span id="logoname">Sequencr.js v5</span>
+			<img src="./Logo.png" /><span id="logoname">Sequencr.js v6</span>
 		
 			<br clear="all" /><br />
 			<!--<div class="consoleboxbox"><div class="consolebox">-->
@@ -340,10 +371,7 @@ function recursivePrimeFinder(value) {
 		function(completed){ 
 			//Done callback - completed will be true iff value is prime
 			if(completed){
-				$("#primenumbers").append("&lt;li&gt;" + value + "&lt;/li&gt;");
-				while($("#primenumbers").height() > $("#primenumberscodesample").height()){
-					$("#primenumbers").find("li").first().remove();
-				}
+				console.log(value);
 			}
 			recursivePrimeFinder(value + 2);
 		});
@@ -385,19 +413,16 @@ for(var i = 2; i < 1000; i++){ //Test integers from 1 -> 1000
 sampleText = "The quick brown fox jumps over the lazy dog.";
 var printLock = false;
 var timeout = 75;
-$(function(){
-	$("#txtExBtn").click(function(){
-		if(printLock)
-			return;
-		printLock = true;
-		$("#txtout").html(""); //Clear the output
-	
-		Sequencr.for(0, sampleText.length, function(i){
-			$("#txtout").append(sampleText[i]); //Append char
-		}, timeout, //Timeout in ms
-		function(){printLock = false}); //Done callback
-	});
-});
+function typeText(){
+	if(printLock)
+		return;
+	printLock = true;
+
+	Sequencr.for(0, sampleText.length, function(i){
+		console.log(sampleText[i]); //Print current char
+	}, timeout, //Timeout in ms
+	function(){printLock = false}); //Done callback
+}
 					</pre>
 				</td>
 				<td class="col-md-5">
@@ -459,68 +484,96 @@ timeout = function(i){ //i is the index within the loop
 			
 			<p>We've got <code>Sequencr.promiseChain</code>, and <code>Sequencr.promiseFor</code> for your enjoyment. Let's take another look at that prime number example from above because if it were written using <code>Sequencr.promiseFor</code>, we wouldn't need to use recursion or do any flattening, and that's just what promises are for!
 			
-			<pre class="prettyprint linenums">
+			<table class="table"><tbody><tr>
+				<td class="col-md-10">
+					<pre id="primenumberscodesample2" class="prettyprint linenums">
 //Infinite promise loops are not possible because the promise chain is set up all at once, 
 //but you could always execute this multiple times on different number ranges.
-Sequencr.promiseFor(2, 1000, function(i){
+Sequencr.promiseFor(2, 1000, function(resolve, reject, i){
 	if(i > 3){
-		var myPromise = Sequencr.promiseFor(2, Math.max(~~Math.sqrt(i), 3), function(j){
-			return new Promise(function(resolve, reject){
-				setTimeout(function(){
-					if(i % j === 0) {
-						prime = false; 
-						reject(i); //Break out of internal loop.
-					}
-					else{
-						resolve(i);
-					}
-				}, 0);
-			});
-		});
-		
-		return new Promise(function(resolve){
-			myPromise.then(function(x){
-				console.log(x + " is prime.");
-				resolve();
-			}).catch(function(x){
-				//console.log(x + " is not prime.");
-				resolve();
-			});	
-		});
+		Sequencr.promiseFor(2, ~~Math.sqrt(i) + 1, function(resolve, reject, j){
+			setTimeout(function(){ //Prevent hanging.
+				if(i % j === 0) 
+					reject(i); //Break out of internal loop (not prime)
+				else
+					resolve(i); //Continue internal loop (could be prime)
+			}, 0);
+		}) //Returns a promise to the last iteration.
+		.then(function(x){
+			console.log(x + " is prime.");
+			resolve(); //Continue
+		}).catch(function(x){
+			//console.log(x + " is not prime.");
+			resolve(); //Continue
+		});	
 	}
 	else{
 		console.log(i + " is prime.");
+		resolve(); //Continue
 	}
 });
-			</pre>
+			</pre></pre></td><td class="col-md-2">
+				<button class="button btn-lg" id="prime2Btn" >Thry This</button>
+				<div class="consoleboxbox" style="height: 100%;"><div class="consolebox" style="height: 100%; color: #6F6;">
+					<ul id="primenumbers2" style="list-style-type: none;"></ul>
+				</div></div>
+			</td></tr></tbody></table>
 			
-			<p><code>Sequencr.promiseChain</code> is also very useful for chaining together functions that make asynchronous requests. For instance:</p>
-			<pre class="prettyprint linenums">
+			<p><code>Sequencr.promiseChain</code> is also useful for chaining together functions that make asynchronous requests. For instance:</p>
+			<table class="table"><tbody><tr>
+				<td>
+					<pre class="prettyprint linenums">
 var myPromise = Sequencr.promiseChain([
-function(){
-    return new Promise(function(resolve, reject){
-        resolve(100); //Arbitrary value.
-    });
-}, 
-function(x){
-    return new Promise(function(resolve, reject){
-        resolve(x * 2);
-    });
-}, 
-function(x){
-    return new Promise(function(resolve, reject){
-        resolve(x + 10);
-    });
-}, 
+	function(resolve, reject){
+		resolve(100); //Arbitrary value.
+	}, 
+	function(resolve, reject, x){
+		resolve(x * 2);
+	}, 
+	function(resolve, reject, x){
+		resolve(x + 10);
+	}, 
 ]);
 
 //Whenever/later:
 myPromise.then(function(x){
     console.log(x); //Will print 210, given the above sequence.
 });
-			</pre>
+			</pre></td></tr></tbody></table>
 			
-			<p>Don't forget to <a href="#moreinfo">check the wiki</a> (or just click the link right below this sentence) for more information on Sequencr.js' promises.</p>
+			<p>See how Sequencr sets up and manages the actual promise objects? All you need to call either resolve or reject when your work is done. Simple. Let's try a more practical example.</p>
+			
+			<table class="table"><tbody><tr>
+				<td class="col-md-7">
+					<pre class="prettyprint linenums">
+Sequencr.promiseChain([
+	//GET AN ACCESS TOKEN
+	function(resolve, reject){
+		console.log("Getting access token.");
+		$.get("http://jsideris.github.io/Sequencr.js/access_token", 
+			{username: "jsideris", password: "123456789"})
+			.done(function(data){
+				console.log("Access token is: " + data);
+				resolve(data); //Return, pass access token into next function.
+			}).fail(function(data){reject("Failed to get access token.");});
+	}, 
+	//USE THE TOKEN TO ACCESS PRIVATE CONTENT
+	function(resolve, reject, accessToken){
+		$.get("http://jsideris.github.io/Sequencr.js/secret_file?accesstoken=" 
+			+ accessToken)
+			.done(function(data){resolve(data);})
+			.fail(function(data){reject("Failed get secret file.");});
+	}
+]).then(function(data){
+	//PRINT FILE TO CONSOLE.
+	console.log("Successfully retrieved file:");
+	console.log(data);
+}).catch(function(reason){
+	//ONE OF THE ABOVE ASYNC REQUESTS FAILED.
+	console.log(reason);
+});
+			</pre>
+			</td></tr></tbody></table>	
 			
 			<a name="moreinfo"></a>
 			<h1>Manual + More Info</h1>
