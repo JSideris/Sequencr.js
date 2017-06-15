@@ -97,8 +97,12 @@
 		$("#mario").css("height", "70px");
 	}
 	
+	var changingLock = false;
+
 	$(function(){
 		$("#mario").click(function(){
+			if(changingLock) return;
+			changingLock = true;
 			if($(this).css("height") == "70px"){
 				Sequencr.chain([
 					marioBig, 
@@ -319,8 +323,12 @@ function marioSmall(){
 	$("#mario").css("height", "70px");
 }
 
+var changingLock = false;
+
 $(function(){
 	$("#mario").click(function(){
+		if(changingLock) return;
+		changingLock = true;
 		if($(this).css("height") == "70px"){
 			Sequencr.chain([
 				marioBig, 
@@ -354,6 +362,14 @@ $(function(){
 			
 			<p>Any value returned by a function will be used as an argument to the next function.</p>
 			
+			<p>The timeout parameter for <code>Sequencr.chain</code> can be a function that returns an integer. 
+			This way, you can have dynamic timeouts. If a function is used in place of timeout, 
+			that function will be passed a parameter indicating 0-based index of the function in the array.
+			This can be useful for a number of applications. Suppose you wanted to chain several functions with different timeouts.
+			You could do something like this:</p>
+			
+			<pre>Sequencr.chain([function1, function2, function3], function(i){return [100, 400, 500][i];});</pre>
+
 			<a name="nonblockingloops"></a>
 			<h2>Non-Blocking Loops</h2>
 			<p>How do you avoid crashing the browser when running CPU-intensive loops? Since JavaScript doesn't have a native sleep() function, the answer is timeouts, of course. I got fed up with the limitations and annoyances of setInterval, clearInterval, and setTimeout, so I built a better solution: <code>Sequencr.for</code> and <code>Sequencr.do</code>.</p>
